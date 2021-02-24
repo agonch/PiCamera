@@ -1,0 +1,44 @@
+enable camera option in raspi-config
+raspistill -o img.jpg
+raspivid -o video.h264
+omxplayer
+
+NOTE
+
+- raspivid uses the Video Encode component
+- raspiyuv and raspividyuv don't use an encoder, and sends their YUV or RGB output directly from the camera component to file
+
+pi@agonch:~/522/camera $ python camcontinuousrecording.py 
+mmal: mmal_vc_port_enable: failed to enable port vc.null_sink:in:0(OPQV): ENOSPC
+mmal: mmal_port_enable: failed to enable connected port (vc.null_sink:in:0(OPQV))0xd35e80 (ENOSPC)
+mmal: mmal_connection_enable: output port couldn't be enabled
+Traceback (most recent call last):
+  File "camcontinuousrecording.py", line 8, in <module>
+    with picamera.PiCamera() as camera:
+  File "/usr/lib/python2.7/dist-packages/picamera/camera.py", line 433, in __init__
+    self._init_preview()
+  File "/usr/lib/python2.7/dist-packages/picamera/camera.py", line 513, in _init_preview
+    self, self._camera.outputs[self.CAMERA_PREVIEW_PORT])
+  File "/usr/lib/python2.7/dist-packages/picamera/renderers.py", line 558, in __init__
+    self.renderer.inputs[0].connect(source).enable()
+  File "/usr/lib/python2.7/dist-packages/picamera/mmalobj.py", line 2212, in enable
+    prefix="Failed to enable connection")
+  File "/usr/lib/python2.7/dist-packages/picamera/exc.py", line 184, in mmal_check
+    raise PiCameraMMALError(status, prefix)
+picamera.exc.PiCameraMMALError: Failed to enable connection: Out of resources
+
+resolved by closing the camera
+this is necessary to prevent GPU memory leaks.
+also https://raspberrypi.stackexchange.com/questions/13764/what-causes-enospc-error-when-using-the-raspberry-pi-camera-module
+
+
+Task 1: stream picamera to VLC viewer
+	server reads in
+	client starts recording over a network socket
+Task 2: same, but update pixels * 2 and then view in VLC viewer
+
+"You will probably notice several seconds of latency with this setup. 
+This is normal and is because media players buffer several seconds to 
+guard against unreliable network streams."
+ https://picamera.readthedocs.io/en/release-1.10/recipes1.html#controlling-the-led
+
