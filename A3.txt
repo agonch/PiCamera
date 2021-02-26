@@ -42,3 +42,5 @@ This is normal and is because media players buffer several seconds to
 guard against unreliable network streams."
  https://picamera.readthedocs.io/en/release-1.10/recipes1.html#controlling-the-led
 
+Getting OpenCV installed: https://stackoverflow.com/questions/51853018/how-do-i-install-opencv-using-pip
+
