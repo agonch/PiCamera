@@ -7,6 +7,12 @@ import sys
 import cv2
 import numpy as np
 
+"""
+Streamed continously into an RGB Array:
+ https://picamera.readthedocs.io/en/release-1.10/api_array.html#pirgbarray
+ https://picamera.readthedocs.io/en/release-1.10/api_camera.html#picamera.camera.PiCamera.capture_continuous    
+"""
+
 np.set_printoptions(threshold=sys.maxsize)
 RESOLUTION = (640, 480)
 PIXELATED_RESOLUTION = (64, 64)
@@ -43,7 +49,6 @@ with picamera.PiCamera() as camera:
     stream = io.BytesIO()
     prepCamera(camera)
     time.sleep(1)
-
     with PiRGBArray(camera, size=RESOLUTION) as rawPiStream:
         for frame in camera.capture_continuous(rawPiStream, format="bgr", use_video_port=True):
             cv2.imshow('Input', frame.array)
