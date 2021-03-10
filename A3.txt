@@ -48,3 +48,7 @@ Getting OpenCV installed: https://stackoverflow.com/questions/51853018/how-do-i-
 From Documentation:
 - FAST https://picamera.readthedocs.io/en/release-1.10/api_array.html#pirgbarray
 - SLOW https://picamera.readthedocs.io/en/release-1.10/api_camera.html#picamera.camera.PiCamera.capture_continuous
+
+pi crashes when 3.3V touches ground
+
+0.1 μF Capacitor used 
