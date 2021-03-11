@@ -10,6 +10,7 @@ from PIL import Image
 import sys
 import cv2
 import numpy as np
+import math
 
 """
 Streamed continously into an RGB Array:
@@ -20,7 +21,7 @@ Streamed continously into an RGB Array:
 np.set_printoptions(threshold=sys.maxsize)
 RESOLUTION = (640, 480)
 PIXELATED_RESOLUTION = (64, 64)
-RGB_MULTIPLIER = 1
+RGB_MULTIPLIER = 1  # log2 of FSR resistance value
 
 def flipRGB(rgb_array):
     return rgb_array[:, :, ::-1]
@@ -31,6 +32,7 @@ Grab the input size of the PiRGBArray, and resize the input to
 "pixelated" size. Return output image.
 """
 def pixelateFrame(rgb_array):
+    print(RGB_MULTIPLIER)
     rgb_array = rgb_array * RGB_MULTIPLIER
     height, width = rgb_array.shape[:2]
     temp = cv2.resize(rgb_array, PIXELATED_RESOLUTION, interpolation=cv2.INTER_LINEAR)
@@ -52,12 +54,12 @@ def prepCamera(camera):
 
 
 def rc_time (pin_to_circuit):
-    count = 0
+    count = 1
 
     #Output on the pin for
     GPIO.setup(pin_to_circuit, GPIO.OUT)
     GPIO.output(pin_to_circuit, GPIO.LOW)
-    time.sleep(0.2)
+    time.sleep(0.1)
 
     #Change the pin back to input
     GPIO.setup(pin_to_circuit, GPIO.IN)
@@ -66,15 +68,12 @@ def rc_time (pin_to_circuit):
     while (GPIO.input(pin_to_circuit) == GPIO.LOW):
         count += 1
 
-    return count / 10000
+    return max(int(math.log2(count)), 1)
 
 def gpio_callback(channel):
     global RGB_MULTIPLIER
     RGB_MULTIPLIER = rc_time(6)
-    if GPIO.input(channel) == GPIO.HIGH:
-        print('▼  at ' + str(datetime.datetime.now()))
-    else:
-        print(' ▲ at ' + str(datetime.datetime.now()))
+    print("▼  at  %s [multiplier %d]" % (str(datetime.datetime.now()), RGB_MULTIPLIER))
 
 
 def launch_camera():
@@ -95,7 +94,7 @@ def launch_camera():
 
 try:
     GPIO.setmode(GPIO.BCM)
-    GPIO.setup(6, GPIO.IN) # pull_up_down=GPIO.PUD_DOWN)
+    GPIO.setup(6, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
     GPIO.add_event_detect(6, GPIO.BOTH, callback=gpio_callback)
     launch_camera()
 finally:
