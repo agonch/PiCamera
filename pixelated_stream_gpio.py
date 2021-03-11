@@ -32,7 +32,6 @@ Grab the input size of the PiRGBArray, and resize the input to
 "pixelated" size. Return output image.
 """
 def pixelateFrame(rgb_array):
-    print(RGB_MULTIPLIER)
     rgb_array = rgb_array * RGB_MULTIPLIER
     height, width = rgb_array.shape[:2]
     temp = cv2.resize(rgb_array, PIXELATED_RESOLUTION, interpolation=cv2.INTER_LINEAR)
