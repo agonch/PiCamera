@@ -1,2 +1,2 @@
 # PiCamera
-[![Demo](Demo.mp4)
+[Demo](Demo.mp4)
